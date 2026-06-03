@@ -113,3 +113,34 @@ class TestRecommendRoutes(unittest.TestCase):
 
 if __name__ == '__main__':
     unittest.main()
+    
+    # Test 11 - Edge case: elevacion cero no rompe el sistema
+def test_elevacion_cero(self):
+    df_plano = self.df[self.df["elevation_m"] == 0]
+    if len(df_plano) > 0:
+        resultado = recommend_routes("Beginner", df_plano)
+        self.assertIsNotNone(resultado)
+
+# Test 12 - Edge case: velocidad en limite exacto cae en nivel correcto
+def test_velocidad_limite_20(self):
+    resultado = recommend_routes("Beginner", self.df)
+    if resultado is not None:
+        speeds = resultado["average_speed_kmh"]
+        self.assertTrue(all(s <= 32.19 for s in speeds))  # 20 mph convertido
+
+# Test 13 - Edge case: ruta corta con mucha elevacion
+def test_ruta_corta_alta_elevacion(self):
+    df_test = self.df[
+        (self.df["distance_km"] < 15) & 
+        (self.df["elevation_m"] > 500)
+    ]
+    if len(df_test) > 0:
+        resultado = recommend_routes("Advanced", df_test)
+        self.assertIsNotNone(resultado)
+
+# Test 14 - Edge case: dataframe con un solo registro
+def test_un_solo_registro(self):
+    df_uno = self.df.head(1)
+    resultado = recommend_routes("Beginner", df_uno)
+    # No debe lanzar error, puede retornar vacío
+    self.assertIsNotNone(resultado)
